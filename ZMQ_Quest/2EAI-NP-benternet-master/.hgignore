@@ -1,0 +1,8 @@
+syntax: glob
+*.user
+*.exe
+*.o
+build-*
+*.user.*
+*.zip
+bin
