@@ -6,6 +6,7 @@
 #include <zmq.hpp>
 #include <string>
 #include <iostream>
+using namespace std;
 
 int main ()
 {
@@ -16,10 +17,20 @@ int main ()
     std::cout << "Connecting to hello world server..." << std::endl;
     socket.connect ("tcp://localhost:5555");
 
+    string bericht;
+    char* char_arr;
+
+
+
+
+
     //  Do 10 requests, waiting each time for a response
     for (int request_nbr = 0; request_nbr != 10; request_nbr++) {
         zmq::message_t request (5);
-        memcpy (request.data (), "Hello", 5);
+        cin >> bericht;
+        char_arr = &bericht[0];
+        //std::memcpy (request.data(), text.data(), text.size());
+        memcpy (request.data (), char_arr, 5);
         std::cout << "Sending Hello " << request_nbr << "..." << std::endl;
         socket.send (request, zmq::send_flags::none);
 
