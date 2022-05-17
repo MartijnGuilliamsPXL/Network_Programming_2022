@@ -21,8 +21,8 @@
 
 ## Deel 2
 
-* 
-* 
+* Veld wordt getoond
+* spelers kiezen eigen plaats van boten
 
 
 
