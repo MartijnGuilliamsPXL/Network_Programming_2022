@@ -1,43 +1,39 @@
-//
-//  Hello World client in C++
-//  Connects REQ socket to tcp://localhost:5555
-//  Sends "Hello" to server, expects "World" back
-//
-#include <zmq.hpp>
+#include <zmq.h>
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include <string>
 #include <iostream>
+
 using namespace std;
 
-int main ()
+
+int main (void)
 {
-    //  Prepare our context and socket
-    zmq::context_t context (1);
-    zmq::socket_t socket (context, zmq::socket_type::req);
+    printf ("Connecting to hello world server...\n");
+    void *context = zmq_ctx_new ();
+    void *requester = zmq_socket (context, ZMQ_REQ);
+    zmq_connect (requester, "tcp://localhost:5555");
 
-    std::cout << "Connecting to hello world server..." << std::endl;
-    socket.connect ("tcp://localhost:5555");
+    while (true) {
 
-    string bericht;
-    char* char_arr;
+        string input = "";
+        cout << "Doe ma: ";
+        cin >> input;
 
+        char buffer [30];
+        printf ("Sending\n");
 
+        const void * a = input.c_str();
+        zmq_send (requester, a, 21, 0);
+        zmq_recv (requester, buffer, 21, 0);
 
-
-
-    //  Do 10 requests, waiting each time for a response
-    for (int request_nbr = 0; request_nbr != 10; request_nbr++) {
-        zmq::message_t request (5);
-        cin >> bericht;
-        char_arr = &bericht[0];
-        //std::memcpy (request.data(), text.data(), text.size());
-        memcpy (request.data (), char_arr, 5);
-        std::cout << "Sending Hello " << request_nbr << "..." << std::endl;
-        socket.send (request, zmq::send_flags::none);
-
-        //  Get the reply.
-        zmq::message_t reply;
-        socket.recv (reply, zmq::recv_flags::none);
-        std::cout << "Received World " << request_nbr << std::endl;
+        cout << "Received: " << buffer << "\n";
+        sleep(1);
     }
+
+    zmq_close (requester);
+    zmq_ctx_destroy (context);
     return 0;
 }
