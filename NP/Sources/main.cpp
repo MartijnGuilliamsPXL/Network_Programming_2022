@@ -8,6 +8,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+
     ///////////////////////////////////////////////////////////////
     /// commands                                                ///
     /// create lobby: name>servicename>create>userID>           ///
@@ -18,7 +19,8 @@ int main(int argc, char *argv[])
     ///////////////////////////////////////////////////////////////
 
 
-    Server nr1(nullptr, "test>servicename>");
+
+    Server nr1(nullptr, "name>servicename>");
     nr1.runServer();
     cout << "hello world" << endl;
     return a.exec();

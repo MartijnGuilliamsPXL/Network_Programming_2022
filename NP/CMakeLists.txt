@@ -29,12 +29,26 @@ link_directories(
 set(project_headers
     Sources/server.h
     Sources/service.h
+    Sources/battleship/Board.hpp
+    Sources/battleship/Constants.hpp
+    Sources/battleship/Game.hpp
+    Sources/battleship/player.hpp
+    Sources/battleship/Ship.hpp
+    Sources/battleship/utils.hpp
+
 )
 
 set(project_sources
         Sources/main.cpp
         Sources/server.cpp
         Sources/service.cpp
+        Sources/battleship/Board.cpp
+        Sources/battleship/executeMain.cpp
+        Sources/battleship/Game.cpp
+        Sources/battleship/Player.cpp
+        Sources/battleship/Ship.cpp
+        Sources/battleship/testMain.cpp
+        Sources/battleship/utils.cpp
 )
 
 set(ALL_LIBS
