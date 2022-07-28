@@ -1,5 +1,6 @@
 #include "Board.hpp"
 #include <iostream>
+//#include <QString>
 
 // default board constructor builds a 2D array filled with water, 
 // and fills a vector with the standard ship objects
@@ -108,20 +109,23 @@ char Board::getSpaceValue(int x, int y)
 // record a hit on the board by attempting to record a hit on every ship
 // if a ship is hit, change board position to hit and return true
 // if no ship is hit, change board position to miss and return false
-bool Board::recordHit(int x, int y)
+bool Board::recordHit(int x, int y, QString *returnval)
 {
+    //QString command;
 	for (int i=0; i<NUM_SHIPS; i++)
 	{
 		if (shipVec[i].recordHit(x, y))
 		{
 			gameBoard[y][x]=isHIT; //record the hit on the board
 			//tell the user that they sunk a ship
-			if (shipVec[i].isShipSunk()) 
-				std::cout<<"You sunk the "<<shipVec[i].getName()<<"!\n";
+            if (shipVec[i].isShipSunk())
+               *returnval = QString("You sunk the " + QString(shipVec[i].getName().c_str()) + "!\n");
+                //std::cout<<"You sunk the "<<shipVec[i].getName()<<"!\n";
 			return true;
 		}
 	}
 	gameBoard[y][x]=isMISS;
+    *returnval = QString("None");
 	return false;
 }
 

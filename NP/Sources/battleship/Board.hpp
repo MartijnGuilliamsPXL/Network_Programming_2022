@@ -9,6 +9,7 @@
 #include "Ship.hpp"
 #include "Constants.hpp"
 #include <vector>
+#include <QString>
 
 #ifndef BOARD_H
 #define BOARD_H
@@ -30,7 +31,7 @@ class Board
         string printPrivateBoard();
         string printPublicBoard();
 		char getSpaceValue(int x, int y);
-		bool recordHit(int x, int y);
+        bool recordHit(int x, int y, QString *returnval);
 		bool placeShip(int shipNum, int x, int y, bool isHorizontal);
 
 };

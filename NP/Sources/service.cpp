@@ -384,7 +384,11 @@ void Service::getNextMove(Board &b)
             && b.getSpaceValue(xEntry-LETTER_CHAR_OFFSET,
                             yEntry-NUMBER_CHAR_OFFSET)!=isMISS)
         {
-            b.recordHit(xEntry-LETTER_CHAR_OFFSET, yEntry-NUMBER_CHAR_OFFSET);
+            QString returnval;
+            b.recordHit(xEntry-LETTER_CHAR_OFFSET, yEntry-NUMBER_CHAR_OFFSET, &returnval);
+            if(returnval != QString("none")){
+                sendCommand(returnval);
+            }
             goodMove=true;
         }
         attemptCount++;
@@ -409,8 +413,11 @@ void Service::getNextMoveAuto(Board &b)
         if (b.getSpaceValue(xEntry, yEntry)!=isHIT
             && b.getSpaceValue(xEntry, yEntry)!=isMISS)
         {
-            b.recordHit(xEntry, yEntry);
-            goodMove=true;
+            QString returnval;
+            b.recordHit(xEntry, yEntry, &returnval);
+            if(returnval != QString("none")){
+                sendCommand(returnval);
+            }
         }
     }
     return;
@@ -431,9 +438,11 @@ std::string Service::getSquare()
             isGoodInput=true;
         else
         {
-            std::cout<<"Bad input! Please enter location [Letter][Number] of "
-                        <<"your desired move, with capital letters only:\n";
-            std::getline(std::cin, retString);
+            sendCommand("Bad input! Please enter location [Letter][Number] of your desired move, with capital letters only:\n");
+            //std::cout<<"Bad input! Please enter location [Letter][Number] of "
+                        //<<"your desired move, with capital letters only:\n";
+            retString = receiveCommand(activeplayer, NULL).toStdString();
+            //std::getline(std::cin, retString);
         }
     }
 
