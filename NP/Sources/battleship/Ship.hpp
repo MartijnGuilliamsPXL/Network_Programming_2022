@@ -6,6 +6,7 @@
 ******************************************************************************/
 
 #include <string>
+#include <QString>
 
 #ifndef SHIP_H
 #define SHIP_H
@@ -34,7 +35,7 @@ class Ship
 		bool isShipHorizontal() const;
 		std::string getName() const;
 		void setPosition(int x, int y, bool h);
-		void printShip();
+        void printShip(QString *returnval);
 		bool recordHit(int hitLocX, int hitLocY);
 };
 

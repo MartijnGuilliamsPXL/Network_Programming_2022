@@ -12,7 +12,7 @@ int bmain()
 	bool continueGame=true;
 	while (continueGame)
 	{
-		continueGame = printMenu();
+        //continueGame = printMenu();
 	}
 	return 0;
 

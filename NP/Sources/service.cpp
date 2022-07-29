@@ -193,11 +193,14 @@ bool Service::playGame()
     }
 
     if (gameCondition()==P1_WIN)
-        std::cout<<p1.getName()<<" wins!!!"<<std::endl;
+        sendCommand(QString(p1.getName().c_str() + QString(" wins!!!")));
+        //std::cout<<p1.getName()<<" wins!!!"<<std::endl;
     else
-        std::cout<<p2.getName()<<" wins!!!"<<std::endl;
+        sendCommand(QString(p2.getName().c_str() + QString(" wins!!!")));
+        //std::cout<<p2.getName()<<" wins!!!"<<std::endl;
 
-    std::cout<<"I hope you enjoyed the Battleship game. Bye!\n\n";
+    sendCommand(QString("I hope you enjoyed the Battleship game. Bye!\n\n"));
+    //std::cout<<"I hope you enjoyed the Battleship game. Bye!\n\n";
     return true;
 
 }
@@ -254,22 +257,31 @@ void Service::startGame()
 // mostly obscured, save for moves player has made
 void Service::printGameState(Player p)
 {
-    std::cout<<p.getName()<<"'s GAME STATE:\n\n";
+    sendCommand(QString(p.getName().c_str()) + QString("'s GAME STATE:\n\n"));
+    //std::cout<<p.getName()<<"'s GAME STATE:\n\n";
     if (p.getPlayerNum()==1)
     {
-        std::cout<<"YOUR BOARD: \n";
-        p1Board.printPublicBoard();
-        std::cout<<"YOUR OPPONENT'S BOARD: \n";
-        p2Board.printPrivateBoard();
-        std::cout<<std::endl<<std::endl;
+        sendCommand(QString("YOUR BOARD: \n"));
+        //std::cout<<"YOUR BOARD: \n";
+        sendCommand(QString(p1Board.printPublicBoard().c_str()));
+        //p1Board.printPublicBoard();
+        sendCommand(QString("YOUR OPPONENT'S BOARD: \n"));
+        //std::cout<<"YOUR OPPONENT'S BOARD: \n";
+        sendCommand(QString(p2Board.printPrivateBoard().c_str()));
+        //p2Board.printPrivateBoard();
+        //std::cout<<std::endl<<std::endl;
     }
     else
     {
-        std::cout<<"YOUR BOARD: \n";
-        p2Board.printPublicBoard();
-        std::cout<<"YOUR OPPONENT'S BOARD: \n";
-        p1Board.printPrivateBoard();
-        std::cout<<std::endl<<std::endl;
+        sendCommand(QString("YOUR BOARD: \n"));
+        //std::cout<<"YOUR BOARD: \n";
+        sendCommand(QString(p2Board.printPublicBoard().c_str()));
+        //p2Board.printPublicBoard();
+        sendCommand(QString("YOUR OPPONENT'S BOARD: \n"));
+        //std::cout<<"YOUR OPPONENT'S BOARD: \n";
+        sendCommand(QString(p1Board.printPrivateBoard().c_str()));
+        //p1Board.printPrivateBoard();
+        //std::cout<<std::endl<<std::endl;
     }
 
 
@@ -288,18 +300,25 @@ void Service::initializeBoard(Board &b)
         {
             b.printPublicBoard();
             if (attemptCount>0)
-            std::cout<<"INVALID ENTRY for that ship! Please try again. \n";
+            sendCommand(QString("INVALID ENTRY for that ship! Please try again. \n"));
+            //std::cout<<"INVALID ENTRY for that ship! Please try again. \n";
 
-            std::cout<<"Please enter location [Letter][Number] for the "<<
-                        "top/left of your "<<SHIP_NAMES[i]<<" which is length "
-                        <<SHIP_LENGTHS[i]<<": \n";
+            sendCommand(QString("Please enter location [Letter][Number] for the top/left of your " + QString(SHIP_NAMES[i].c_str()) + " which is length " + QString(char(SHIP_LENGTHS[i])) + ": \n"));
+            //std::cout<<"Please enter location [Letter][Number] for the "<<
+            //            "top/left of your "<<SHIP_NAMES[i]<<" which is length "
+            //            <<SHIP_LENGTHS[i]<<": \n";
             entryTemp=getSquare();
             xEntry=static_cast<int>(entryTemp[0]);
             yEntry=static_cast<int>(entryTemp[1]);
 
-            std::cout<<"Please enter 0 if the ship is oriented vertically, "
-                        <<"1 if it is oriented horizontally:\n";
-            horizEntry=getInt(0,1);
+            sendCommand(QString("Please enter 0 if the ship is oriented vertically, 1 if it is oriented horizontally:\n"));
+            //std::cout<<"Please enter 0 if the ship is oriented vertically, "
+            //            <<"1 if it is oriented horizontally:\n";
+
+            sendCommand(QString("prestuff>print>geef 0 als het schip verticaal moet of 1 voor horizontaal>binval>req>"));
+            horizEntry = receiveCommand(1, QString("binval")).toInt();
+            // NAKIJKEN !!!!!!!!!!!!
+            //horizEntry=getInt(0,1);
 
             attemptCount++;
         } while (!b.placeShip(i, xEntry-LETTER_CHAR_OFFSET,
@@ -307,8 +326,10 @@ void Service::initializeBoard(Board &b)
 
     }
 
-    std::cout<<"Your starting board: \n";
-    b.printPublicBoard();
+    sendCommand(QString("Your starting board: \n"));
+    //std::cout<<"Your starting board: \n";
+    sendCommand(QString(b.printPublicBoard().c_str()));
+    //b.printPublicBoard();
 
     return;
 }
