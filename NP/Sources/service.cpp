@@ -66,7 +66,8 @@ void Service::setupLoop()
         receiver->recv(datapayload);
         QString command = QString(string((char*) datapayload->data(), datapayload->size()).c_str());
         delete datapayload;
-        cout << command.toStdString() << endl;
+        sendCommand(QString(command.toStdString().c_str()));
+        //cout << command.toStdString() << endl;
         if(processSetupCommand(command.section('>', 4))){
             break;
         }
@@ -83,7 +84,8 @@ int Service::processSetupCommand(QString command)
             player2 = "CPU";
             player2Auto = true;
             isStarted = true;
-            cout << "lobby " << lobby << ": player two is CPU" << endl;
+            sendCommand(QString("lobby ") + QString(char(lobby)) + QString(": player two is CPU"));
+            //cout << "lobby " << lobby << ": player two is CPU" << endl;
             playGame();
         }
     }
@@ -96,7 +98,8 @@ int Service::processSetupCommand(QString command)
             else{
                 player2 = command.section('>', 0, 0);
                 isStarted = true;
-                cout << "lobby " << lobby << ": player two joined, id: " << player2.toStdString() << endl;
+                sendCommand(QString("lobby ") + QString(char(lobby)) + QString(": player two joined, id: ") + QString(player2.toStdString().c_str()));
+                //cout << "lobby " << lobby << ": player two joined, id: " << player2.toStdString() << endl;
                 playGame();
             }
         }
@@ -353,7 +356,8 @@ void Service::initializeBoardAuto(Board &b, bool print)
 
     if (print)
     {
-        std::cout<<"Your starting board: \n";
+        sendCommand(QString("Your starting board: \n"));
+        //std::cout<<"Your starting board: \n";
         if(activeplayer == 1){
             QString prepend = player1 + QString(">board>");
             sendCommand(prepend + b.printPublicBoard().c_str() + ">");
@@ -393,9 +397,11 @@ void Service::getNextMove(Board &b)
     while (!goodMove)
     {
         if (attemptCount>0)
-            std::cout<<"That move has already been attempted. Try again. \n";
+            sendCommand(QString("That move has already been attempted. Try again. \n"));
+            //std::cout<<"That move has already been attempted. Try again. \n";
 
-        std::cout<<"Please enter location [Letter][Number] of desired move:\n";
+        sendCommand(QString("Please enter location [Letter][Number] of desired move:\n"));
+        //std::cout<<"Please enter location [Letter][Number] of desired move:\n";
         entryTemp=getSquare();
         xEntry=static_cast<int>(entryTemp[0]);
         yEntry=static_cast<int>(entryTemp[1]);
