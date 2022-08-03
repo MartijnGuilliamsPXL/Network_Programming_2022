@@ -131,6 +131,7 @@ int Service::processCommand(QString command)
                     }
                 }
                 else if(command.section('>', i + 1, i + 1) == QString("string")){
+                    cin >> request;
                     break;
                 }
                 else{

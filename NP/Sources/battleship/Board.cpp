@@ -69,7 +69,7 @@ QString Board::printPrivateBoard()
 
             // obfuscate non-hit/miss entries
             else {
-                tosend.append(to_string(isUNKNOWN).c_str());
+                tosend.append(isUNKNOWN);
                 tosend.append(" ");
             }
 

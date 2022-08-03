@@ -51,6 +51,7 @@ Service::~Service()
 
 void Service::run()
 {
+    //preparegame();
     QtConcurrent::run(&Service::preparegame, this);
     //loop();
 }
@@ -83,7 +84,7 @@ void Service::preparegame(){
         player2Auto = 1;
         cout << "player 1: " << player1.toStdString() << endl << "player 2: CPU" << endl;
     }
-    startGame();
+    playGame();
 }
 
 void Service::queueCommand(int command, QString value)
@@ -172,24 +173,28 @@ bool Service::playGame()
         {
             printGameState(*(pptr));
             getNextMove(*(bptr));
-            printGameState(*(pptr));
+            //printGameState(*(pptr));
         }
 
         // switch pointers at the end of each turn
         if ((*pptr).getPlayerNum()==1)
         {
+            /*
             if (!p1.isPlayerAutomatic() && !p2.isPlayerAutomatic())
             {
                 //switchPlayers(p1.getName(), p2.getName());
             }
+            */
             pptr = &p2;
             bptr = &p1Board;
         }
         else {
+            /*
             if (!p1.isPlayerAutomatic() && !p2.isPlayerAutomatic())
             {
                 //switchPlayers(p2.getName(), p1.getName());
             }
+            */
             pptr = &p1;
             bptr = &p2Board;
         }
@@ -257,6 +262,7 @@ void Service::startGame()
         else initializeBoard(p2Board);
 
     }
+    activeplayer = PLAYER1;
     return;
 }
 
@@ -480,7 +486,7 @@ void Service::getNextMoveAuto(Board &b)
 std::string Service::getSquare()
 {
     std::string retString;
-    queueCommand(REQUEST, QString("String"));
+    queueCommand(REQUEST, QString("string"));
     sendCommand(activeplayer);
     retString = receiveCommand().toStdString();
     //retString = receiveCommand(activeplayer, NULL).toStdString();
@@ -499,7 +505,7 @@ std::string Service::getSquare()
             //sendCommand("Bad input! Please enter location [Letter][Number] of your desired move, with capital letters only:\n");
             //std::cout<<"Bad input! Please enter location [Letter][Number] of "
                         //<<"your desired move, with capital letters only:\n";
-            queueCommand(REQUEST, QString("String"));
+            queueCommand(REQUEST, QString("string"));
             sendCommand(activeplayer);
             retString = receiveCommand().toStdString();
             //retString = receiveCommand(activeplayer, NULL).toStdString();

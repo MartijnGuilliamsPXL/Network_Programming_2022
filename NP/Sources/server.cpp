@@ -27,8 +27,8 @@ Server::Server(QObject *parent, QString ServerString):
 
 void Server::runServer()
 {
-    QtConcurrent::run(&Server::receiveLoop, this);
     //receiveLoop();
+    QtConcurrent::run(&Server::receiveLoop, this);
 }
 
 void Server::killService(Service *toKill)
