@@ -40,19 +40,14 @@ Service::~Service()
     delete receiver;
     delete context_p;
 }
-/*
+
 void Service::run()
 {
-    QtConcurrent::run(&Service::setupLoop, this);
+    QtConcurrent::run(&Service::Loop, this);
     //loop();
 }
 
-int Service::getLobby()
-{
-    return lobby;
-}
-
-void Service::setupLoop()
+void Service::Loop()
 {
     zmq::message_t* datapayload;
     while(1){
@@ -61,14 +56,14 @@ void Service::setupLoop()
         QString command = QString(string((char*) datapayload->data(), datapayload->size()).c_str());
         delete datapayload;
         cout << command.toStdString() << endl;
-        if(processSetupCommand(command.section('>', 4))){
+        if(processCommand(command.section('>', 4))){
             break;
         }
     }
     emit killme(this);
-}*/
+}
 
-int Service::processSetupCommand(QString command)
+int Service::processCommand(QString command)
 {
     //a lot of if statement checking the command
     //try to make player 2 auto;
@@ -91,15 +86,4 @@ void Service::sendCommand(QString command)
     sender->send(payload.toStdString().c_str(), payload.size());
 }
 
-QString Service::receiveCommand(int player, QString desiredplayercommand)
-{
-    zmq::message_t* datapayload;
-    while(1){
-        datapayload = new zmq::message_t;
-        receiver->recv(datapayload);
-        QString command = QString(string((char*) datapayload->data(), datapayload->size()).c_str());
-        delete datapayload;
-        //if the player and the command is correcct
 
-    }
-}

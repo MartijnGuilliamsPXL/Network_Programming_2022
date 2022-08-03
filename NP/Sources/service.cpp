@@ -180,7 +180,7 @@ bool Service::playGame()
         {
             if (!p1.isPlayerAutomatic() && !p2.isPlayerAutomatic())
             {
-                switchPlayers(p1.getName(), p2.getName());
+                //switchPlayers(p1.getName(), p2.getName());
             }
             pptr = &p2;
             bptr = &p1Board;
@@ -188,7 +188,7 @@ bool Service::playGame()
         else {
             if (!p1.isPlayerAutomatic() && !p2.isPlayerAutomatic())
             {
-                switchPlayers(p2.getName(), p1.getName());
+                //switchPlayers(p2.getName(), p1.getName());
             }
             pptr = &p1;
             bptr = &p2Board;
@@ -238,7 +238,7 @@ void Service::startGame()
     // if both players are non-auto, clear screen appropriately between fills
     if (!p2.isPlayerAutomatic() && !p1.isPlayerAutomatic())
     {
-        switchPlayers(p1.getName(), p2.getName());
+        //switchPlayers(p1.getName(), p2.getName());
     }
 
     if (p2.isPlayerAutomatic())
@@ -454,7 +454,8 @@ void Service::getNextMoveAuto(Board &b)
 std::string Service::getSquare()
 {
     std::string retString;
-    std::getline(std::cin, retString);
+    retString = receiveCommand(activeplayer, NULL).toStdString();
+    //std::getline(std::cin, retString);
     bool isGoodInput=false;
 
     while (!isGoodInput)
@@ -480,16 +481,26 @@ std::string Service::getSquare()
 // switchPlayers is a function that controls the screen between turns,
 // ensuring that the player whose turn it is can control what is visible
 // on the screen in case someone else is peeking
+/*
 void Service::switchPlayers(std::string playerFrom, std::string playerTo)
 {
-    std::cout<<playerFrom<<", press ENTER to finish your turn!";
+    sendCommand(QString(playerFrom.c_str()) + QString(", press ENTER to finish your turn!"));
+    // std::cout<<playerFrom<<", press ENTER to finish your turn!";
+
     std::cin.get();
     std::cout<<std::flush;
-    std::cout<<std::string(100,'\n');
-    std::cout<<playerTo<<", press ENTER to start your turn!";
-    std::cin.get();
-    std::cout<<std::flush;
+
+    //sendCommand(QString(""));
     std::cout<<std::string(100,'\n');
 
+    sendCommand(QString(playerTo.c_str()) + QString(", press ENTER to start your turn!"));
+    //std::cout<<playerTo<<", press ENTER to start your turn!";
+
+    std::cin.get();
+    std::cout<<std::flush;
+
+    //sendCommand(QString(""));
+    std::cout<<std::string(100,'\n');
 }
+*/
 

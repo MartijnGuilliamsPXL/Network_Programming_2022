@@ -83,7 +83,7 @@ public:
     void getNextMove(Board &b);
     void getNextMoveAuto(Board &b);
     std::string getSquare();
-    void switchPlayers(std::string playerFrom, std::string playerTo);
+    //void switchPlayers(std::string playerFrom, std::string playerTo);
 
 };
 
