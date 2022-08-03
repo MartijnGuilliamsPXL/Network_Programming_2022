@@ -1,6 +1,5 @@
 #include "Board.hpp"
 #include <iostream>
-//#include <QString>
 
 // default board constructor builds a 2D array filled with water, 
 // and fills a vector with the standard ship objects
@@ -53,24 +52,24 @@ int Board::getNumHits()
 
 // method to print the private version of the board 
 // (player can only see hits/misses) 
-string Board::printPrivateBoard()
+QString Board::printPrivateBoard()
 {
-    string tosend;
+    QString tosend;
     tosend.append("  A B C D E F G H I J\n");
     for (int i=0; i<BOARD_DIM; i++)
     {
-        tosend.append(to_string(i));
+        tosend.append(to_string(i).c_str());
         tosend.append(" ");
         for (int j=0; j<BOARD_DIM; j++)
         {
             if (gameBoard[i][j]==isHIT || gameBoard[i][j]==isMISS){
-                tosend.append(to_string(gameBoard[i][j]));
+                tosend.append(gameBoard[i][j]);
                 tosend.append(" ");
             }
 
             // obfuscate non-hit/miss entries
             else {
-                tosend.append(to_string(isUNKNOWN));
+                tosend.append(to_string(isUNKNOWN).c_str());
                 tosend.append(" ");
             }
 
@@ -82,17 +81,17 @@ string Board::printPrivateBoard()
 
 // method to print the board that the player can see completely 
 // (usually, the player's own board)
-string Board::printPublicBoard()
+QString Board::printPublicBoard()
 {
-    string tosend;
+    QString tosend;
     tosend.append("  A B C D E F G H I J\n");
 	for (int i=0; i<BOARD_DIM; i++)
 	{
-        tosend.append(to_string(i));
+        tosend.append(to_string(i).c_str());
         tosend.append(" ");
 		for (int j=0; j<BOARD_DIM; j++)
 		{
-            tosend.append(to_string(gameBoard[i][j]));
+            tosend.append((gameBoard[i][j]));
             tosend.append(" ");
 		}	
         tosend.append("\n");
@@ -109,23 +108,20 @@ char Board::getSpaceValue(int x, int y)
 // record a hit on the board by attempting to record a hit on every ship
 // if a ship is hit, change board position to hit and return true
 // if no ship is hit, change board position to miss and return false
-bool Board::recordHit(int x, int y, QString *returnval)
+bool Board::recordHit(int x, int y)
 {
-    //QString command;
 	for (int i=0; i<NUM_SHIPS; i++)
 	{
 		if (shipVec[i].recordHit(x, y))
 		{
 			gameBoard[y][x]=isHIT; //record the hit on the board
 			//tell the user that they sunk a ship
-            if (shipVec[i].isShipSunk())
-               *returnval = QString("You sunk the " + QString(shipVec[i].getName().c_str()) + "!\n");
-                //std::cout<<"You sunk the "<<shipVec[i].getName()<<"!\n";
+			if (shipVec[i].isShipSunk()) 
+				std::cout<<"You sunk the "<<shipVec[i].getName()<<"!\n";
 			return true;
 		}
 	}
 	gameBoard[y][x]=isMISS;
-    *returnval = QString("None");
 	return false;
 }
 

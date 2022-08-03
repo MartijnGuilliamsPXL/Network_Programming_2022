@@ -213,9 +213,6 @@ CMAKE_STRIP:FILEPATH=C:/Qt/Tools/mingw810_64/bin/strip.exe
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Value Computed by CMake
-NP_BINARY_DIR:STATIC=C:/Users/marti/Documents/2EAIA_2021-2022/Git/Network_Programming_2022/build-NP_Client-Desktop_Qt_6_1_3_MinGW_64_bit-Debug
-
-//Value Computed by CMake
 NP_Client_BINARY_DIR:STATIC=C:/Users/marti/Documents/2EAIA_2021-2022/Git/Network_Programming_2022/build-NP_Client-Desktop_Qt_6_1_3_MinGW_64_bit-Debug
 
 //Value Computed by CMake
@@ -223,12 +220,6 @@ NP_Client_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 NP_Client_SOURCE_DIR:STATIC=C:/Users/marti/Documents/2EAIA_2021-2022/Git/Network_Programming_2022/NP_Client
-
-//Value Computed by CMake
-NP_IS_TOP_LEVEL:STATIC=ON
-
-//Value Computed by CMake
-NP_SOURCE_DIR:STATIC=C:/Users/marti/Documents/2EAIA_2021-2022/Git/Network_Programming_2022/NP_Client
 
 //Additional directories where find(Qt6 ...) components are searched
 QT_ADDITIONAL_PACKAGES_PREFIX_PATH:STRING=

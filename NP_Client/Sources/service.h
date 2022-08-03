@@ -8,13 +8,11 @@
 #include <QtConcurrent>
 #include <iostream>
 
+#include <stdlib.h>
+#include <time.h>
 
 
-#include <cstdlib>
-#include <ctime>
-
-
-
+enum commands {REQUEST, PRINT, RESPONSE};
 
 using namespace std;
 
@@ -22,9 +20,9 @@ class Service : public QObject
 {
     Q_OBJECT
 public:
-    explicit Service(QObject *parent = nullptr);
+    //explicit Service(QObject *parent = nullptr);
 
-    Service(QObject *parent, QString userid, int lobbynr);
+    Service();
     ~Service();
     void run();
     int getLobby();
@@ -40,16 +38,22 @@ private:
     ///
     /// player USRID/ 0 => allebei
 
-    int lobby;
+
+    QString userID;
+    QString lobby;
     zmq::socket_t* sender;
     zmq::socket_t* receiver;
     zmq::context_t* context_p;
 
     QString standardPrefix;
 
+    void setupLobby();
+    void joinLobby();
+
     void Loop();
     int processCommand(QString command);
-    void sendCommand(QString command);
+    void sendCommand(int command, QString value);
+    QString receiveString();
 };
 
 #endif // SERVICE_H

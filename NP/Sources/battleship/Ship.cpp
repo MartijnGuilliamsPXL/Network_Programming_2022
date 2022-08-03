@@ -126,13 +126,11 @@ void Ship::setPosition(int x, int y, bool h)
 }
 
 // print ship to console for visualization (only used for debugging)
-void Ship::printShip(QString *returnval)
+void Ship::printShip() 
 {
 	for (int i=0; i<shipSize; i++)
-         *returnval = QString(shipSquares[i]) + " ";
-        //cout<<shipSquares[i]<<" ";
-    //cout<<"\n";
-     *returnval += "\n";
+		cout<<shipSquares[i]<<" ";
+	cout<<"\n";
 	return;
 }
 

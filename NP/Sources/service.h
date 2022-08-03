@@ -17,6 +17,8 @@
 
 
 enum state {P1_WIN, P2_WIN, UNFINISHED};
+enum commands {REQUEST, PRINT, RESPONSE};
+enum selectplayer {ALLPLAYERS, PLAYER1, PLAYER2};
 
 using namespace std;
 
@@ -55,11 +57,14 @@ private:
     bool isStarted;
     bool player2Auto;
 
+    void preparegame();
+    //makes it possible to queue commands before sending
+    QString queuedCommand;
+    void queueCommand(int command, QString value);
+    void sendCommand(int user);
 
-    void setupLoop();
-    int processSetupCommand(QString command);
-    void sendCommand(QString command);
-    QString receiveCommand(int player, QString desiredcommand);
+    QString receiveCommand();
+    QString standardReceive();
 
     // Game
     /////////////////////
@@ -83,7 +88,7 @@ public:
     void getNextMove(Board &b);
     void getNextMoveAuto(Board &b);
     std::string getSquare();
-    //void switchPlayers(std::string playerFrom, std::string playerTo);
+    void switchPlayers(std::string playerFrom, std::string playerTo);
 
 };
 

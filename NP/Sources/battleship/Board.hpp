@@ -28,10 +28,10 @@ class Board
 		Board& operator=(const Board &right);
 		~Board() {return;}; // standard destructor - no dynamically memory
 		int getNumHits();
-        string printPrivateBoard();
-        string printPublicBoard();
+        QString printPrivateBoard();
+        QString printPublicBoard();
 		char getSpaceValue(int x, int y);
-        bool recordHit(int x, int y, QString *returnval);
+		bool recordHit(int x, int y);
 		bool placeShip(int shipNum, int x, int y, bool isHorizontal);
 
 };

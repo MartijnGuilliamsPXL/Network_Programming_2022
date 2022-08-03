@@ -38,6 +38,8 @@ Service::Service(QObject *parent, QString userid, int lobbynr):
 
     //send the acknowledgement, the lobby is prepared
     sender->send(ack.toStdString().c_str(), ack.size());
+
+
 }
 
 Service::~Service()
@@ -49,7 +51,7 @@ Service::~Service()
 
 void Service::run()
 {
-    QtConcurrent::run(&Service::setupLoop, this);
+    QtConcurrent::run(&Service::preparegame, this);
     //loop();
 }
 
@@ -58,86 +60,84 @@ int Service::getLobby()
     return lobby;
 }
 
-void Service::setupLoop()
-{
-    zmq::message_t* datapayload;
-    while(1){
-        datapayload = new zmq::message_t;
-        receiver->recv(datapayload);
-        QString command = QString(string((char*) datapayload->data(), datapayload->size()).c_str());
-        delete datapayload;
-        sendCommand(QString(command.toStdString().c_str()));
-        //cout << command.toStdString() << endl;
-        if(processSetupCommand(command.section('>', 4))){
-            break;
-        }
+void Service::preparegame(){
+    //wait for player 1 ready
+    QString receivedmessage = standardReceive();
+    while(receivedmessage.section('>', 5, 5) != QString("response") || receivedmessage.section('>', 6, 6) != QString("ready")){
+        receivedmessage = standardReceive();
     }
-    emit killme(this);
-}
-
-int Service::processSetupCommand(QString command)
-{
-    //a lot of if statement checking the command
-    //try to make player 2 auto;
-    if(command.section('>', 1, 1) == QString("autojoin")){
-        if(!isStarted){
-            player2 = "CPU";
-            player2Auto = true;
-            isStarted = true;
-            sendCommand(QString("lobby ") + QString(char(lobby)) + QString(": player two is CPU"));
-            //cout << "lobby " << lobby << ": player two is CPU" << endl;
-            playGame();
+    //asks if player 2 is CPU or Human
+    queueCommand(PRINT, QString("Is player 2 Human (or CPU) y/n"));
+    queueCommand(REQUEST, QString("bool"));
+    sendCommand(PLAYER1);
+    if(receiveCommand().toInt()){
+        QString receivedmessage = standardReceive();
+        while(receivedmessage.section('>', 5, 5) != QString("response") || receivedmessage.section('>', 6, 6) != QString("join")){
+            receivedmessage = standardReceive();
         }
-    }
-    //try to add player 2
-    else if(command.section('>', 1, 1) == QString("join")){
-        if(!isStarted){
-            if(player1 == command.section('>', 0, 0)){
-                sendCommand(QString("err>P2connotBeP1>"));
-            }
-            else{
-                player2 = command.section('>', 0, 0);
-                isStarted = true;
-                sendCommand(QString("lobby ") + QString(char(lobby)) + QString(": player two joined, id: ") + QString(player2.toStdString().c_str()));
-                //cout << "lobby " << lobby << ": player two joined, id: " << player2.toStdString() << endl;
-                playGame();
-            }
-        }
-        else{
-            sendCommand(QString("err>lobbyfull>"));
-        }
-    }
-    //exit and delete lobby
-    else if(command.section('>', 1, 1) == QString("exit")){
-        sendCommand(QString(">print>exiting lobby, thanks for playing>"));
-        cout << "exit lobby: " << lobby << endl;
-        return 1;
+        player2 = receivedmessage.section('>', 4, 4);
+        player2Auto = 0;
+        cout << "player 1: " << player1.toStdString() << endl << "player 2: " << player2.toStdString() << endl;
     }
     else{
-        sendCommand(QString("err>unknown command>"));
+        player2Auto = 1;
+        cout << "player 1: " << player1.toStdString() << endl << "player 2: CPU" << endl;
     }
-    return 0;
+    startGame();
 }
 
-void Service::sendCommand(QString command)
+void Service::queueCommand(int command, QString value)
 {
-    QString payload = standardPrefix + command;
-    sender->send(payload.toStdString().c_str(), payload.size());
+    QString toqueue = queuedCommand;
+    switch (command){
+    case REQUEST:
+        toqueue = toqueue + "request>" + value + '>';
+        break;
+    case PRINT:
+        toqueue = toqueue + "print>" + value + '>';
+        break;
+    case RESPONSE:
+        toqueue = toqueue + "response>" + value + '>';
+        break;
+    }
+
+    queuedCommand = toqueue;
 }
 
-QString Service::receiveCommand(int player, QString desiredplayercommand)
+void Service::sendCommand(int user)
+{
+    //by checking on not 1 or not 2 in case of zero both players will be notified
+    if(user != PLAYER2) // 1 or both
+    {
+        QString tosend = standardPrefix + player1 + '>'  + queuedCommand;
+        sender->send(tosend.toStdString().c_str(), tosend.size());
+    }
+    if(user != PLAYER1) // 2 or both
+    {
+        QString tosend = standardPrefix + player2 + '>' + queuedCommand;
+        sender->send(tosend.toStdString().c_str(), tosend.size());
+    }
+    //reset queue
+    queuedCommand = "";
+}
+
+QString Service::receiveCommand()
 {
     zmq::message_t* datapayload;
-    while(1){
-        datapayload = new zmq::message_t;
-        receiver->recv(datapayload);
-        QString command = QString(string((char*) datapayload->data(), datapayload->size()).c_str());
-        delete datapayload;
-        //if the player and the command is correcct
-        if((command.section('>', 4, 4) == player1 && player == 1 || command.section('>', 4, 4) == player2 && player == 2 || player == 0) && command.section('>', 5, 5) == desiredplayercommand){
-            return command.section('>', 6);
-        }
-    }
+    datapayload = new zmq::message_t;
+    receiver->recv(datapayload);
+    QString response = QString(string((char*) datapayload->data(), datapayload->size()).c_str());
+    delete datapayload;
+    return response.section('>', 6, 6);
+}
+
+QString Service::standardReceive(){
+    zmq::message_t* datapayload;
+    datapayload = new zmq::message_t;
+    receiver->recv(datapayload);
+    QString response = QString(string((char*) datapayload->data(), datapayload->size()).c_str());
+    delete datapayload;
+    return response;
 }
 
 // function to play game
@@ -196,14 +196,19 @@ bool Service::playGame()
     }
 
     if (gameCondition()==P1_WIN)
-        sendCommand(QString(p1.getName().c_str() + QString(" wins!!!")));
+        queueCommand(PRINT, QString(p1.getName().c_str() + QString(" wins!!!")));
+        //sendCommand(QString(p1.getName().c_str() + QString(" wins!!!")));
         //std::cout<<p1.getName()<<" wins!!!"<<std::endl;
     else
-        sendCommand(QString(p2.getName().c_str() + QString(" wins!!!")));
+        queueCommand(PRINT, QString(p2.getName().c_str() + QString(" wins!!!")));
+        //sendCommand(QString(p2.getName().c_str() + QString(" wins!!!")));
         //std::cout<<p2.getName()<<" wins!!!"<<std::endl;
 
-    sendCommand(QString("I hope you enjoyed the Battleship game. Bye!\n\n"));
+    queueCommand(PRINT, QString("I hope you enjoyed the Battleship game. Bye!\n\n"));
+    //sendCommand(QString("I hope you enjoyed the Battleship game. Bye!\n\n"));
     //std::cout<<"I hope you enjoyed the Battleship game. Bye!\n\n";
+
+    sendCommand(activeplayer);
     return true;
 
 }
@@ -227,27 +232,26 @@ void Service::startGame()
     p2.setAuto(player2Auto);
 
     //initialize both boards, according to whether the players are automatic
-    activeplayer = 1;
-    sendCommand(player1 + QString(">q>binval>print>how would you like your board to be set? (enter 0 for non-auto, 1 for auto)\n"));
-    autoTemp = receiveCommand(1, QString("binval")).toInt();
+    //initialize p1
+    activeplayer = PLAYER1;
+    queueCommand(PRINT, QString("how would you like your board to be set? (enter 0 for non-auto, 1 for auto)"));
+    queueCommand(REQUEST, QString("bool"));
+    sendCommand(activeplayer);
+    autoTemp = receiveCommand().toInt();
     if (autoTemp)
         initializeBoardAuto(p1Board, true);
     else initializeBoard(p1Board);
 
 
-    // if both players are non-auto, clear screen appropriately between fills
-    if (!p2.isPlayerAutomatic() && !p1.isPlayerAutomatic())
-    {
-        //switchPlayers(p1.getName(), p2.getName());
-    }
-
     if (p2.isPlayerAutomatic())
         initializeBoardAuto(p2Board, false);
     else
     {
-
-        sendCommand(QString("player 2>how would you like your board to be set? (enter 0 for non-auto, 1 for auto)\n"));
-        autoTemp = receiveCommand(2, QString("binval")).toInt();
+        activeplayer = PLAYER2;
+        queueCommand(PRINT, QString("how would you like your board to be set? (enter 0 for non-auto, 1 for auto)"));
+        queueCommand(REQUEST, QString("bool"));
+        sendCommand(activeplayer);
+        autoTemp = receiveCommand().toInt();
         if (autoTemp)
             initializeBoardAuto(p2Board, true);
         else initializeBoard(p2Board);
@@ -260,33 +264,42 @@ void Service::startGame()
 // mostly obscured, save for moves player has made
 void Service::printGameState(Player p)
 {
-    sendCommand(QString(p.getName().c_str()) + QString("'s GAME STATE:\n\n"));
+    queueCommand(PRINT, QString(p.getName().c_str() + QString("'s GAME STATE:\n\n")));
+    //sendCommand(QString(p.getName().c_str()) + QString("'s GAME STATE:\n\n"));
     //std::cout<<p.getName()<<"'s GAME STATE:\n\n";
     if (p.getPlayerNum()==1)
     {
-        sendCommand(QString("YOUR BOARD: \n"));
+        queueCommand(PRINT, QString("YOUR BOARD: \n"));
+        //sendCommand(QString("YOUR BOARD: \n"));
         //std::cout<<"YOUR BOARD: \n";
-        sendCommand(QString(p1Board.printPublicBoard().c_str()));
+        queueCommand(PRINT, QString(p1Board.printPublicBoard()));
+        //sendCommand(QString(p1Board.printPublicBoard().c_str()));
         //p1Board.printPublicBoard();
-        sendCommand(QString("YOUR OPPONENT'S BOARD: \n"));
+        queueCommand(PRINT, QString("YOUR OPPONENT'S BOARD: \n"));
+        //sendCommand(QString("YOUR OPPONENT'S BOARD: \n"));
         //std::cout<<"YOUR OPPONENT'S BOARD: \n";
-        sendCommand(QString(p2Board.printPrivateBoard().c_str()));
+        queueCommand(PRINT, QString(p2Board.printPrivateBoard()));
+        //sendCommand(QString(p2Board.printPrivateBoard().c_str()));
         //p2Board.printPrivateBoard();
         //std::cout<<std::endl<<std::endl;
     }
     else
     {
-        sendCommand(QString("YOUR BOARD: \n"));
+        queueCommand(PRINT, QString("YOUR BOARD: \n"));
+        //sendCommand(QString("YOUR BOARD: \n"));
         //std::cout<<"YOUR BOARD: \n";
-        sendCommand(QString(p2Board.printPublicBoard().c_str()));
+        queueCommand(PRINT, QString(p2Board.printPublicBoard()));
+        //sendCommand(QString(p2Board.printPublicBoard().c_str()));
         //p2Board.printPublicBoard();
-        sendCommand(QString("YOUR OPPONENT'S BOARD: \n"));
+        queueCommand(PRINT, QString("YOUR OPPONENT'S BOARD: \n"));
+        //sendCommand(QString("YOUR OPPONENT'S BOARD: \n"));
         //std::cout<<"YOUR OPPONENT'S BOARD: \n";
-        sendCommand(QString(p1Board.printPrivateBoard().c_str()));
+        queueCommand(PRINT, QString(p1Board.printPrivateBoard()));
+        //sendCommand(QString(p1Board.printPrivateBoard().c_str()));
         //p1Board.printPrivateBoard();
         //std::cout<<std::endl<<std::endl;
     }
-
+    sendCommand(p.getPlayerNum());
 
     return;
 }
@@ -303,10 +316,12 @@ void Service::initializeBoard(Board &b)
         {
             b.printPublicBoard();
             if (attemptCount>0)
-            sendCommand(QString("INVALID ENTRY for that ship! Please try again. \n"));
+            queueCommand(PRINT, QString("INVALID ENTRY for that ship! Please try again. \n"));
+            //sendCommand(QString("INVALID ENTRY for that ship! Please try again. \n"));
             //std::cout<<"INVALID ENTRY for that ship! Please try again. \n";
 
-            sendCommand(QString("Please enter location [Letter][Number] for the top/left of your " + QString(SHIP_NAMES[i].c_str()) + " which is length " + QString(char(SHIP_LENGTHS[i])) + ": \n"));
+            queueCommand(PRINT, QString("Please enter location [Letter][Number] for the top/left of your " + QString(SHIP_NAMES[i].c_str()) + " which is length " + QString(char(SHIP_LENGTHS[i])) + ": \n"));
+            //sendCommand(QString("Please enter location [Letter][Number] for the top/left of your " + QString(SHIP_NAMES[i].c_str()) + " which is length " + QString(char(SHIP_LENGTHS[i])) + ": \n"));
             //std::cout<<"Please enter location [Letter][Number] for the "<<
             //            "top/left of your "<<SHIP_NAMES[i]<<" which is length "
             //            <<SHIP_LENGTHS[i]<<": \n";
@@ -314,14 +329,16 @@ void Service::initializeBoard(Board &b)
             xEntry=static_cast<int>(entryTemp[0]);
             yEntry=static_cast<int>(entryTemp[1]);
 
-            sendCommand(QString("Please enter 0 if the ship is oriented vertically, 1 if it is oriented horizontally:\n"));
+            queueCommand(PRINT, QString("Please enter 0 if the ship is oriented vertically, 1 if it is oriented horizontally:\n"));
+            //sendCommand(QString("Please enter 0 if the ship is oriented vertically, 1 if it is oriented horizontally:\n"));
             //std::cout<<"Please enter 0 if the ship is oriented vertically, "
             //            <<"1 if it is oriented horizontally:\n";
 
-            sendCommand(QString("prestuff>print>geef 0 als het schip verticaal moet of 1 voor horizontaal>binval>req>"));
-            horizEntry = receiveCommand(1, QString("binval")).toInt();
-            // NAKIJKEN !!!!!!!!!!!!
-            //horizEntry=getInt(0,1);
+            queueCommand(PRINT, QString("prestuff>print>geef 0 als het schip verticaal moet of 1 voor horizontaal>binval>req>"));
+            //sendCommand(QString("prestuff>print>geef 0 als het schip verticaal moet of 1 voor horizontaal>binval>req>"));
+            queueCommand(REQUEST, QString("binval"));
+            sendCommand(activeplayer);
+            horizEntry = receiveCommand().toInt();
 
             attemptCount++;
         } while (!b.placeShip(i, xEntry-LETTER_CHAR_OFFSET,
@@ -329,11 +346,14 @@ void Service::initializeBoard(Board &b)
 
     }
 
-    sendCommand(QString("Your starting board: \n"));
+    queueCommand(PRINT, QString("Your starting board: \n"));
+    //sendCommand(QString("Your starting board: \n"));
     //std::cout<<"Your starting board: \n";
-    sendCommand(QString(b.printPublicBoard().c_str()));
-    //b.printPublicBoard();
 
+    queueCommand(PRINT, QString(b.printPublicBoard()));
+    //sendCommand(QString(b.printPublicBoard().c_str()));
+    //b.printPublicBoard();
+    sendCommand(activeplayer);
     return;
 }
 
@@ -356,16 +376,18 @@ void Service::initializeBoardAuto(Board &b, bool print)
 
     if (print)
     {
-        sendCommand(QString("Your starting board: \n"));
-        //std::cout<<"Your starting board: \n";
+        queueCommand(PRINT, QString("Your starting board: "));
+        queueCommand(PRINT, QString(b.printPublicBoard()));
+        sendCommand(activeplayer);
+        /*std::cout<<"Your starting board: \n";
         if(activeplayer == 1){
             QString prepend = player1 + QString(">board>");
-            sendCommand(prepend + b.printPublicBoard().c_str() + ">");
+            //sendCommand(prepend + b.printPublicBoard().c_str() + ">");
         }
         else{
             QString prepend = player2 + QString(">board>");
-            sendCommand(prepend + b.printPublicBoard().c_str() + ">");
-        }
+            //sendCommand(prepend + b.printPublicBoard().c_str() + ">");
+        }*/
     }
 
 
@@ -397,10 +419,12 @@ void Service::getNextMove(Board &b)
     while (!goodMove)
     {
         if (attemptCount>0)
-            sendCommand(QString("That move has already been attempted. Try again. \n"));
+            queueCommand(PRINT, QString("That move has already been attempted. Try again. \n"));
+            //sendCommand(QString("That move has already been attempted. Try again. \n"));
             //std::cout<<"That move has already been attempted. Try again. \n";
 
-        sendCommand(QString("Please enter location [Letter][Number] of desired move:\n"));
+        queueCommand(PRINT, QString("Please enter location [Letter][Number] of desired move:\n"));
+        //sendCommand(QString("Please enter location [Letter][Number] of desired move:\n"));
         //std::cout<<"Please enter location [Letter][Number] of desired move:\n";
         entryTemp=getSquare();
         xEntry=static_cast<int>(entryTemp[0]);
@@ -411,12 +435,17 @@ void Service::getNextMove(Board &b)
             && b.getSpaceValue(xEntry-LETTER_CHAR_OFFSET,
                             yEntry-NUMBER_CHAR_OFFSET)!=isMISS)
         {
+            b.recordHit(xEntry-LETTER_CHAR_OFFSET, yEntry-NUMBER_CHAR_OFFSET);
+            goodMove=true;
+
+            /*
             QString returnval;
             b.recordHit(xEntry-LETTER_CHAR_OFFSET, yEntry-NUMBER_CHAR_OFFSET, &returnval);
             if(returnval != QString("none")){
-                sendCommand(returnval);
+               sendCommand(returnval);
             }
             goodMove=true;
+            */
         }
         attemptCount++;
     }
@@ -440,11 +469,8 @@ void Service::getNextMoveAuto(Board &b)
         if (b.getSpaceValue(xEntry, yEntry)!=isHIT
             && b.getSpaceValue(xEntry, yEntry)!=isMISS)
         {
-            QString returnval;
-            b.recordHit(xEntry, yEntry, &returnval);
-            if(returnval != QString("none")){
-                sendCommand(returnval);
-            }
+            b.recordHit(xEntry, yEntry);
+            goodMove=true;
         }
     }
     return;
@@ -454,7 +480,10 @@ void Service::getNextMoveAuto(Board &b)
 std::string Service::getSquare()
 {
     std::string retString;
-    retString = receiveCommand(activeplayer, NULL).toStdString();
+    queueCommand(REQUEST, QString("String"));
+    sendCommand(activeplayer);
+    retString = receiveCommand().toStdString();
+    //retString = receiveCommand(activeplayer, NULL).toStdString();
     //std::getline(std::cin, retString);
     bool isGoodInput=false;
 
@@ -466,10 +495,14 @@ std::string Service::getSquare()
             isGoodInput=true;
         else
         {
-            sendCommand("Bad input! Please enter location [Letter][Number] of your desired move, with capital letters only:\n");
+            queueCommand(PRINT, QString("Bad input! Please enter location [Letter][Number] of your desired move, with capital letters only:\n"));
+            //sendCommand("Bad input! Please enter location [Letter][Number] of your desired move, with capital letters only:\n");
             //std::cout<<"Bad input! Please enter location [Letter][Number] of "
                         //<<"your desired move, with capital letters only:\n";
-            retString = receiveCommand(activeplayer, NULL).toStdString();
+            queueCommand(REQUEST, QString("String"));
+            sendCommand(activeplayer);
+            retString = receiveCommand().toStdString();
+            //retString = receiveCommand(activeplayer, NULL).toStdString();
             //std::getline(std::cin, retString);
         }
     }
@@ -486,21 +519,15 @@ void Service::switchPlayers(std::string playerFrom, std::string playerTo)
 {
     sendCommand(QString(playerFrom.c_str()) + QString(", press ENTER to finish your turn!"));
     // std::cout<<playerFrom<<", press ENTER to finish your turn!";
-
     std::cin.get();
     std::cout<<std::flush;
-
     //sendCommand(QString(""));
     std::cout<<std::string(100,'\n');
-
     sendCommand(QString(playerTo.c_str()) + QString(", press ENTER to start your turn!"));
     //std::cout<<playerTo<<", press ENTER to start your turn!";
-
     std::cin.get();
     std::cout<<std::flush;
-
     //sendCommand(QString(""));
     std::cout<<std::string(100,'\n');
 }
 */
-

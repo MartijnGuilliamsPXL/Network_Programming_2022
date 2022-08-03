@@ -1,33 +1,29 @@
 #include "utils.hpp"
 #include "Game.hpp"
 #include <iostream>
-/*
-bool printMenu(QString *returnval)
+
+bool printMenu()
 {
 	Game g; 
 	int cont;
 
-    *returnval = QString("Welcome to Battleship! Enter 1 or 2 to: \n1. Start a new game.\n2. Quit.\n\n");
-    //std::cout<<"Welcome to Battleship! Enter 1 or 2 to: \n1. Start a new game."
-                //<<"\n2. Quit.\n\n";
-
+	std::cout<<"Welcome to Battleship! Enter 1 or 2 to: \n1. Start a new game."
+				<<"\n2. Quit.\n\n";
 	cont = getInt(1,2);
 
 	if (cont==1)
 	{
-        //g.playGame();
+		g.playGame();
 		return true;
 	}
 	else 
 		return false;
 
-
-}*/
+}
 
 // input validation requires two ints, to indicate the allowed range for input
 // the function will prompt a user to enter an int until 
 // an appropriate one is entered
-/*
 int getInt(int min, int max)
 {
 	std::string retString;
@@ -119,4 +115,3 @@ std::string getString(int maxLen)
 
 	return retString;
 }
-*/

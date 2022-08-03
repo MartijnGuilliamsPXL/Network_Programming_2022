@@ -298,11 +298,7 @@ void Game::getNextMoveAuto(Board &b)
 		if (b.getSpaceValue(xEntry, yEntry)!=isHIT
 			&& b.getSpaceValue(xEntry, yEntry)!=isMISS)
 		{
-            QString returnval;
-            b.recordHit(xEntry, yEntry, &returnval);
-            if(returnval != QString("none")){
-
-            }
+			b.recordHit(xEntry, yEntry);
 			goodMove=true;
 		}
 	} 

@@ -103,7 +103,7 @@ int amain()
 
 	while (continueGame)
 	{
-        //continueGame = printMenu();
+		continueGame = printMenu();
 	}
 	return 0;
 

@@ -63,7 +63,9 @@ void Server::receiveLoop()
         QString fullCommand = QString(string((char*)(datapayload->data()), datapayload->size()).c_str());
         //fullCommand = "name>servicename>create>456>";
         cout << fullCommand.toStdString() << endl;
-        emit requestLobby(fullCommand.section('>', 3, 3));
+        if(fullCommand.section('>', 2, 2) == QString("create")){
+            emit requestLobby(fullCommand.section('>', 3, 3));
+        }
     }
 }
 
