@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 5.0.1, 2022-08-03T16:52:19. -->
+<!-- Written by QtCreator 5.0.1, 2022-08-04T14:24:44. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -300,7 +300,7 @@
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="bool" key="RunConfiguration.UseTerminal">true</value>
+    <value type="bool" key="RunConfiguration.UseTerminal">false</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/marti/Documents/2EAIA_2021-2022/Git/Network_Programming_2022/build-NP-Desktop_Qt_6_1_3_MinGW_64_bit-Debug</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>

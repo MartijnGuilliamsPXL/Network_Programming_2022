@@ -39,7 +39,7 @@ Service::Service(QObject *parent, QString userid, int lobbynr):
     //send the acknowledgement, the lobby is prepared
     sender->send(ack.toStdString().c_str(), ack.size());
 
-
+    srand(time(NULL));
 }
 
 Service::~Service()
@@ -179,6 +179,7 @@ bool Service::playGame()
         // switch pointers at the end of each turn
         if ((*pptr).getPlayerNum()==1)
         {
+            activeplayer = PLAYER2;
             /*
             if (!p1.isPlayerAutomatic() && !p2.isPlayerAutomatic())
             {
@@ -189,6 +190,7 @@ bool Service::playGame()
             bptr = &p1Board;
         }
         else {
+            activeplayer = PLAYER1;
             /*
             if (!p1.isPlayerAutomatic() && !p2.isPlayerAutomatic())
             {
@@ -247,12 +249,11 @@ void Service::startGame()
         initializeBoardAuto(p1Board, true);
     else initializeBoard(p1Board);
 
-
+    activeplayer = PLAYER2;
     if (p2.isPlayerAutomatic())
         initializeBoardAuto(p2Board, false);
     else
     {
-        activeplayer = PLAYER2;
         queueCommand(PRINT, QString("how would you like your board to be set? (enter 0 for non-auto, 1 for auto)"));
         queueCommand(REQUEST, QString("bool"));
         sendCommand(activeplayer);
