@@ -213,7 +213,7 @@ bool Service::playGame()
     //sendCommand(QString("I hope you enjoyed the Battleship game. Bye!\n\n"));
     //std::cout<<"I hope you enjoyed the Battleship game. Bye!\n\n";
 
-    sendCommand(activeplayer);
+    sendCommand(ALLPLAYERS);
     return true;
 
 }
