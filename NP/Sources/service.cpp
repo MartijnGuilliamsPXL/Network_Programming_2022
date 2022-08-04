@@ -38,8 +38,6 @@ Service::Service(QObject *parent, QString userid, int lobbynr):
 
     //send the acknowledgement, the lobby is prepared
     sender->send(ack.toStdString().c_str(), ack.size());
-
-    srand(time(NULL));
 }
 
 Service::~Service()
@@ -374,6 +372,7 @@ void Service::initializeBoardAuto(Board &b, bool print)
     {
         do // randomize position placements and place ships if possible
         {
+            srand(time(NULL));
             xEntry=rand()%10;
             yEntry=rand()%10;
             horizEntry=rand()%2;
