@@ -325,7 +325,7 @@ void Service::initializeBoard(Board &b)
             //sendCommand(QString("INVALID ENTRY for that ship! Please try again. \n"));
             //std::cout<<"INVALID ENTRY for that ship! Please try again. \n";
 
-            queueCommand(PRINT, QString("Please enter location [Letter][Number] for the top/left of your " + QString(SHIP_NAMES[i].c_str()) + " which is length " + QString(char(SHIP_LENGTHS[i])) + ": \n"));
+            queueCommand(PRINT, QString("Please enter location [Letter][Number] for the top/left of your " + QString(SHIP_NAMES[i].c_str()) + " which is length " + QString::number(SHIP_LENGTHS[i]) + ": \n"));
             //sendCommand(QString("Please enter location [Letter][Number] for the top/left of your " + QString(SHIP_NAMES[i].c_str()) + " which is length " + QString(char(SHIP_LENGTHS[i])) + ": \n"));
             //std::cout<<"Please enter location [Letter][Number] for the "<<
             //            "top/left of your "<<SHIP_NAMES[i]<<" which is length "
@@ -339,12 +339,11 @@ void Service::initializeBoard(Board &b)
             //std::cout<<"Please enter 0 if the ship is oriented vertically, "
             //            <<"1 if it is oriented horizontally:\n";
 
-            queueCommand(PRINT, QString("prestuff>print>geef 0 als het schip verticaal moet of 1 voor horizontaal>binval>req>"));
-            //sendCommand(QString("prestuff>print>geef 0 als het schip verticaal moet of 1 voor horizontaal>binval>req>"));
-            queueCommand(REQUEST, QString("binval"));
+            //queueCommand(PRINT, QString("geef 0 als het schip verticaal moet of 1 voor horizontaal"));
+            //sendCommand(QString("geef 0 als het schip verticaal moet of 1 voor horizontaal"));
+            queueCommand(REQUEST, QString("bool"));
             sendCommand(activeplayer);
             horizEntry = receiveCommand().toInt();
-
             attemptCount++;
         } while (!b.placeShip(i, xEntry-LETTER_CHAR_OFFSET,
                         yEntry-NUMBER_CHAR_OFFSET, horizEntry));
@@ -443,15 +442,6 @@ void Service::getNextMove(Board &b)
         {
             b.recordHit(xEntry-LETTER_CHAR_OFFSET, yEntry-NUMBER_CHAR_OFFSET);
             goodMove=true;
-
-            /*
-            QString returnval;
-            b.recordHit(xEntry-LETTER_CHAR_OFFSET, yEntry-NUMBER_CHAR_OFFSET, &returnval);
-            if(returnval != QString("none")){
-               sendCommand(returnval);
-            }
-            goodMove=true;
-            */
         }
         attemptCount++;
     }
@@ -489,6 +479,7 @@ std::string Service::getSquare()
     queueCommand(REQUEST, QString("string"));
     sendCommand(activeplayer);
     retString = receiveCommand().toStdString();
+    retString[0] = toupper(retString[0]);
     //retString = receiveCommand(activeplayer, NULL).toStdString();
     //std::getline(std::cin, retString);
     bool isGoodInput=false;
