@@ -357,13 +357,9 @@ void Service::getNextMove(Board &b)
     while (!goodMove)
     {
         if (attemptCount>0)
-            queueCommand(PRINT, QString("That move has already been attempted. Try again. \n"));
-            //sendCommand(QString("That move has already been attempted. Try again. \n"));
-            //std::cout<<"That move has already been attempted. Try again. \n";
+            queueCommand(PRINT, QString("That move has already been attempted. Try again. \n"));;
 
         queueCommand(PRINT, QString("Please enter location [Letter][Number] of desired move:\n"));
-        //sendCommand(QString("Please enter location [Letter][Number] of desired move:\n"));
-        //std::cout<<"Please enter location [Letter][Number] of desired move:\n";
         entryTemp=getSquare();
         xEntry=static_cast<int>(entryTemp[0]);
         yEntry=static_cast<int>(entryTemp[1]);
