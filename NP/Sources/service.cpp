@@ -178,23 +178,11 @@ bool Service::playGame()
         if ((*pptr).getPlayerNum()==1)
         {
             activeplayer = PLAYER2;
-            /*
-            if (!p1.isPlayerAutomatic() && !p2.isPlayerAutomatic())
-            {
-                //switchPlayers(p1.getName(), p2.getName());
-            }
-            */
             pptr = &p2;
             bptr = &p1Board;
         }
         else {
             activeplayer = PLAYER1;
-            /*
-            if (!p1.isPlayerAutomatic() && !p2.isPlayerAutomatic())
-            {
-                //switchPlayers(p2.getName(), p1.getName());
-            }
-            */
             pptr = &p1;
             bptr = &p2Board;
         }
@@ -202,16 +190,10 @@ bool Service::playGame()
 
     if (gameCondition()==P1_WIN)
         queueCommand(PRINT, QString(p1.getName().c_str() + QString(" wins!!!")));
-        //sendCommand(QString(p1.getName().c_str() + QString(" wins!!!")));
-        //std::cout<<p1.getName()<<" wins!!!"<<std::endl;
     else
         queueCommand(PRINT, QString(p2.getName().c_str() + QString(" wins!!!")));
-        //sendCommand(QString(p2.getName().c_str() + QString(" wins!!!")));
-        //std::cout<<p2.getName()<<" wins!!!"<<std::endl;
 
     queueCommand(PRINT, QString("I hope you enjoyed the Battleship game. Bye!\n\n"));
-    //sendCommand(QString("I hope you enjoyed the Battleship game. Bye!\n\n"));
-    //std::cout<<"I hope you enjoyed the Battleship game. Bye!\n\n";
 
     sendCommand(ALLPLAYERS);
     return true;
@@ -270,39 +252,19 @@ void Service::startGame()
 void Service::printGameState(Player p)
 {
     queueCommand(PRINT, QString(p.getName().c_str() + QString("'s GAME STATE:\n\n")));
-    //sendCommand(QString(p.getName().c_str()) + QString("'s GAME STATE:\n\n"));
-    //std::cout<<p.getName()<<"'s GAME STATE:\n\n";
     if (p.getPlayerNum()==1)
     {
         queueCommand(PRINT, QString("YOUR BOARD: \n"));
-        //sendCommand(QString("YOUR BOARD: \n"));
-        //std::cout<<"YOUR BOARD: \n";
         queueCommand(PRINT, QString(p1Board.printPublicBoard()));
-        //sendCommand(QString(p1Board.printPublicBoard().c_str()));
-        //p1Board.printPublicBoard();
         queueCommand(PRINT, QString("YOUR OPPONENT'S BOARD: \n"));
-        //sendCommand(QString("YOUR OPPONENT'S BOARD: \n"));
-        //std::cout<<"YOUR OPPONENT'S BOARD: \n";
         queueCommand(PRINT, QString(p2Board.printPrivateBoard()));
-        //sendCommand(QString(p2Board.printPrivateBoard().c_str()));
-        //p2Board.printPrivateBoard();
-        //std::cout<<std::endl<<std::endl;
     }
     else
     {
         queueCommand(PRINT, QString("YOUR BOARD: \n"));
-        //sendCommand(QString("YOUR BOARD: \n"));
-        //std::cout<<"YOUR BOARD: \n";
         queueCommand(PRINT, QString(p2Board.printPublicBoard()));
-        //sendCommand(QString(p2Board.printPublicBoard().c_str()));
-        //p2Board.printPublicBoard();
         queueCommand(PRINT, QString("YOUR OPPONENT'S BOARD: \n"));
-        //sendCommand(QString("YOUR OPPONENT'S BOARD: \n"));
-        //std::cout<<"YOUR OPPONENT'S BOARD: \n";
         queueCommand(PRINT, QString(p1Board.printPrivateBoard()));
-        //sendCommand(QString(p1Board.printPrivateBoard().c_str()));
-        //p1Board.printPrivateBoard();
-        //std::cout<<std::endl<<std::endl;
     }
     sendCommand(p.getPlayerNum());
 
@@ -322,25 +284,13 @@ void Service::initializeBoard(Board &b)
             b.printPublicBoard();
             if (attemptCount>0)
             queueCommand(PRINT, QString("INVALID ENTRY for that ship! Please try again. \n"));
-            //sendCommand(QString("INVALID ENTRY for that ship! Please try again. \n"));
-            //std::cout<<"INVALID ENTRY for that ship! Please try again. \n";
 
             queueCommand(PRINT, QString("Please enter location [Letter][Number] for the top/left of your " + QString(SHIP_NAMES[i].c_str()) + " which is length " + QString::number(SHIP_LENGTHS[i]) + ": \n"));
-            //sendCommand(QString("Please enter location [Letter][Number] for the top/left of your " + QString(SHIP_NAMES[i].c_str()) + " which is length " + QString(char(SHIP_LENGTHS[i])) + ": \n"));
-            //std::cout<<"Please enter location [Letter][Number] for the "<<
-            //            "top/left of your "<<SHIP_NAMES[i]<<" which is length "
-            //            <<SHIP_LENGTHS[i]<<": \n";
             entryTemp=getSquare();
             xEntry=static_cast<int>(entryTemp[0]);
             yEntry=static_cast<int>(entryTemp[1]);
 
             queueCommand(PRINT, QString("Please enter 0 if the ship is oriented vertically, 1 if it is oriented horizontally:\n"));
-            //sendCommand(QString("Please enter 0 if the ship is oriented vertically, 1 if it is oriented horizontally:\n"));
-            //std::cout<<"Please enter 0 if the ship is oriented vertically, "
-            //            <<"1 if it is oriented horizontally:\n";
-
-            //queueCommand(PRINT, QString("geef 0 als het schip verticaal moet of 1 voor horizontaal"));
-            //sendCommand(QString("geef 0 als het schip verticaal moet of 1 voor horizontaal"));
             queueCommand(REQUEST, QString("bool"));
             sendCommand(activeplayer);
             horizEntry = receiveCommand().toInt();
@@ -351,12 +301,7 @@ void Service::initializeBoard(Board &b)
     }
 
     queueCommand(PRINT, QString("Your starting board: \n"));
-    //sendCommand(QString("Your starting board: \n"));
-    //std::cout<<"Your starting board: \n";
-
     queueCommand(PRINT, QString(b.printPublicBoard()));
-    //sendCommand(QString(b.printPublicBoard().c_str()));
-    //b.printPublicBoard();
     sendCommand(activeplayer);
     return;
 }
@@ -376,7 +321,6 @@ void Service::initializeBoardAuto(Board &b, bool print)
             yEntry=rand()%10;
             horizEntry=rand()%2;
         } while (!b.placeShip(i, xEntry, yEntry, horizEntry));
-
     }
 
     if (print)
@@ -384,18 +328,7 @@ void Service::initializeBoardAuto(Board &b, bool print)
         queueCommand(PRINT, QString("Your starting board: "));
         queueCommand(PRINT, QString(b.printPublicBoard()));
         sendCommand(activeplayer);
-        /*std::cout<<"Your starting board: \n";
-        if(activeplayer == 1){
-            QString prepend = player1 + QString(">board>");
-            //sendCommand(prepend + b.printPublicBoard().c_str() + ">");
-        }
-        else{
-            QString prepend = player2 + QString(">board>");
-            //sendCommand(prepend + b.printPublicBoard().c_str() + ">");
-        }*/
     }
-
-
     return;
 }
 
@@ -480,8 +413,6 @@ std::string Service::getSquare()
     sendCommand(activeplayer);
     retString = receiveCommand().toStdString();
     retString[0] = toupper(retString[0]);
-    //retString = receiveCommand(activeplayer, NULL).toStdString();
-    //std::getline(std::cin, retString);
     bool isGoodInput=false;
 
     while (!isGoodInput)
@@ -493,38 +424,11 @@ std::string Service::getSquare()
         else
         {
             queueCommand(PRINT, QString("Bad input! Please enter location [Letter][Number] of your desired move, with capital letters only:\n"));
-            //sendCommand("Bad input! Please enter location [Letter][Number] of your desired move, with capital letters only:\n");
-            //std::cout<<"Bad input! Please enter location [Letter][Number] of "
-                        //<<"your desired move, with capital letters only:\n";
             queueCommand(REQUEST, QString("string"));
             sendCommand(activeplayer);
             retString = receiveCommand().toStdString();
-            //retString = receiveCommand(activeplayer, NULL).toStdString();
-            //std::getline(std::cin, retString);
         }
     }
 
     return retString;
 }
-
-
-// switchPlayers is a function that controls the screen between turns,
-// ensuring that the player whose turn it is can control what is visible
-// on the screen in case someone else is peeking
-/*
-void Service::switchPlayers(std::string playerFrom, std::string playerTo)
-{
-    sendCommand(QString(playerFrom.c_str()) + QString(", press ENTER to finish your turn!"));
-    // std::cout<<playerFrom<<", press ENTER to finish your turn!";
-    std::cin.get();
-    std::cout<<std::flush;
-    //sendCommand(QString(""));
-    std::cout<<std::string(100,'\n');
-    sendCommand(QString(playerTo.c_str()) + QString(", press ENTER to start your turn!"));
-    //std::cout<<playerTo<<", press ENTER to start your turn!";
-    std::cin.get();
-    std::cout<<std::flush;
-    //sendCommand(QString(""));
-    std::cout<<std::string(100,'\n');
-}
-*/
