@@ -311,8 +311,7 @@ void Service::initializeBoard(Board &b)
             sendCommand(activeplayer);
             horizEntry = receiveCommand(BOOL).toInt();
             attemptCount++;
-        } while (!b.placeShip(i, xEntry-LETTER_CHAR_OFFSET,
-                        yEntry-NUMBER_CHAR_OFFSET, horizEntry));
+        } while (!b.placeShip(i, xEntry-LETTER_CHAR_OFFSET, yEntry-NUMBER_CHAR_OFFSET, horizEntry));
 
     }
 
@@ -373,17 +372,17 @@ void Service::getNextMove(Board &b)
     while (!goodMove)
     {
         if (attemptCount>0)
-            queueCommand(PRINT, QString("That move has already been attempted. Try again. \n"));;
+        {
+            queueCommand(PRINT, QString("That move has already been attempted. Try again. \n"));
+        }
+
 
         queueCommand(PRINT, QString("Please enter location [Letter][Number] of desired move:\n"));
         entryTemp=getSquare();
         xEntry=static_cast<int>(entryTemp[0]);
         yEntry=static_cast<int>(entryTemp[1]);
 
-        if (b.getSpaceValue(xEntry-LETTER_CHAR_OFFSET,
-                        yEntry-NUMBER_CHAR_OFFSET)!=isHIT
-            && b.getSpaceValue(xEntry-LETTER_CHAR_OFFSET,
-                            yEntry-NUMBER_CHAR_OFFSET)!=isMISS)
+        if (b.getSpaceValue(xEntry-LETTER_CHAR_OFFSET, yEntry-NUMBER_CHAR_OFFSET) != isHIT && b.getSpaceValue(xEntry-LETTER_CHAR_OFFSET, yEntry-NUMBER_CHAR_OFFSET) != isMISS)
         {
             b.recordHit(xEntry-LETTER_CHAR_OFFSET, yEntry-NUMBER_CHAR_OFFSET);
             goodMove=true;
@@ -407,8 +406,7 @@ void Service::getNextMoveAuto(Board &b)
         xEntry=rand()%10;
         yEntry=rand()%10;
 
-        if (b.getSpaceValue(xEntry, yEntry)!=isHIT
-            && b.getSpaceValue(xEntry, yEntry)!=isMISS)
+        if (b.getSpaceValue(xEntry, yEntry) != isHIT && b.getSpaceValue(xEntry, yEntry) != isMISS)
         {
             b.recordHit(xEntry, yEntry);
             goodMove=true;
@@ -431,8 +429,7 @@ std::string Service::getSquare()
         retString[0] = toupper(retString[0]);
 
         // check for two character entries of letter/number
-        if (retString.length()==2 && (retString[0]>=65 && retString[0]<=74)
-                        && (retString[1]>=48 && retString[1]<=57))
+        if (retString.length() == 2 && (retString[0] >= 65 && retString[0] <= 74) && (retString[1] >= 48 && retString[1] <= 57))
             isGoodInput=true;
         else
         {
