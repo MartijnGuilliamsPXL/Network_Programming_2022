@@ -69,7 +69,7 @@ void Service::preparegame(){
     queueCommand(PRINT, QString("Is player 2 Human (or CPU) y/n"));
     queueCommand(REQUEST, QString("bool"));
     sendCommand(PLAYER1);
-    if(receiveCommand().toInt()){
+    if(receiveCommand(BOOL).toInt()){
         QString receivedmessage = standardReceive();
         while(receivedmessage.section('>', 5, 5) != QString("response") || receivedmessage.section('>', 6, 6) != QString("join")){
             receivedmessage = standardReceive();
@@ -83,6 +83,7 @@ void Service::preparegame(){
         cout << "player 1: " << player1.toStdString() << endl << "player 2: CPU" << endl;
     }
     playGame();
+    emit killme(this);
 }
 
 void Service::queueCommand(int command, QString value)
@@ -120,13 +121,28 @@ void Service::sendCommand(int user)
     queuedCommand = "";
 }
 
-QString Service::receiveCommand()
+QString Service::receiveCommand(int type)
 {
     zmq::message_t* datapayload;
     datapayload = new zmq::message_t;
     receiver->recv(datapayload);
     QString response = QString(string((char*) datapayload->data(), datapayload->size()).c_str());
     delete datapayload;
+    QString responseValue = response.section('>', 6, 6);
+    if(type == 0)
+    {
+        if(responseValue == QString("0") || responseValue == QString("1"))
+        {
+            return response.section('>', 6, 6);
+        }
+        else
+        {
+            //sending quit message to all players en ending lobby
+            queueCommand(PRINT, QString("Error, closing lobby\n\n"));
+            emit killme(this);
+            //return "error";
+        }
+    }
     return response.section('>', 6, 6);
 }
 
@@ -224,7 +240,7 @@ void Service::startGame()
     queueCommand(PRINT, QString("how would you like your board to be set? (enter 0 for non-auto, 1 for auto)"));
     queueCommand(REQUEST, QString("bool"));
     sendCommand(activeplayer);
-    autoTemp = receiveCommand().toInt();
+    autoTemp = receiveCommand(BOOL).toInt();
     if (autoTemp)
         initializeBoardAuto(p1Board, true);
     else initializeBoard(p1Board);
@@ -237,7 +253,7 @@ void Service::startGame()
         queueCommand(PRINT, QString("how would you like your board to be set? (enter 0 for non-auto, 1 for auto)"));
         queueCommand(REQUEST, QString("bool"));
         sendCommand(activeplayer);
-        autoTemp = receiveCommand().toInt();
+        autoTemp = receiveCommand(BOOL).toInt();
         if (autoTemp)
             initializeBoardAuto(p2Board, true);
         else initializeBoard(p2Board);
@@ -293,7 +309,7 @@ void Service::initializeBoard(Board &b)
             queueCommand(PRINT, QString("Please enter 0 if the ship is oriented vertically, 1 if it is oriented horizontally:\n"));
             queueCommand(REQUEST, QString("bool"));
             sendCommand(activeplayer);
-            horizEntry = receiveCommand().toInt();
+            horizEntry = receiveCommand(BOOL).toInt();
             attemptCount++;
         } while (!b.placeShip(i, xEntry-LETTER_CHAR_OFFSET,
                         yEntry-NUMBER_CHAR_OFFSET, horizEntry));
@@ -407,12 +423,13 @@ std::string Service::getSquare()
     std::string retString;
     queueCommand(REQUEST, QString("string"));
     sendCommand(activeplayer);
-    retString = receiveCommand().toStdString();
-    retString[0] = toupper(retString[0]);
+    retString = receiveCommand(STRING).toStdString();
     bool isGoodInput=false;
 
     while (!isGoodInput)
     {
+        retString[0] = toupper(retString[0]);
+
         // check for two character entries of letter/number
         if (retString.length()==2 && (retString[0]>=65 && retString[0]<=74)
                         && (retString[1]>=48 && retString[1]<=57))
@@ -422,7 +439,7 @@ std::string Service::getSquare()
             queueCommand(PRINT, QString("Bad input! Please enter location [Letter][Number] of your desired move, with capital letters only:\n"));
             queueCommand(REQUEST, QString("string"));
             sendCommand(activeplayer);
-            retString = receiveCommand().toStdString();
+            retString = receiveCommand(STRING).toStdString();
         }
     }
 

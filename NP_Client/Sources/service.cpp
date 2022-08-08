@@ -181,5 +181,3 @@ QString Service::receiveString()
     //cout << message.toStdString() << endl;
     return message;
 }
-
-

@@ -18,6 +18,7 @@
 
 enum state {P1_WIN, P2_WIN, UNFINISHED};
 enum commands {REQUEST, PRINT, RESPONSE};
+enum formats {BOOL, STRING};
 enum selectplayer {ALLPLAYERS, PLAYER1, PLAYER2};
 
 using namespace std;
@@ -63,7 +64,7 @@ private:
     void queueCommand(int command, QString value);
     void sendCommand(int user);
 
-    QString receiveCommand();
+    QString receiveCommand(int type);
     QString standardReceive();
 
     // Game
