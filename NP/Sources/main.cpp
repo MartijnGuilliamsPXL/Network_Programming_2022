@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
 
 
-    Server nr1(nullptr, "name>servicename>");
+    Server nr1(nullptr, "Zeeslag>");
     nr1.runServer();
     cout << "hello world" << endl;
     return a.exec();

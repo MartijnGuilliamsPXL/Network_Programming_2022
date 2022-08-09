@@ -10,7 +10,7 @@
 Service::Service():
     QObject(nullptr),
 
-    standardPrefix("name>servicename>")
+    standardPrefix("Zeeslag>")
 {
     //prepare userid
     srand(time(NULL));
@@ -66,7 +66,7 @@ void Service::setupLobby(){
     QString lobbyRequest = standardPrefix + "create>" + userID + '>';
     sender->send(lobbyRequest.toStdString().c_str(), lobbyRequest.size());
     //receive lobby
-    QString lobby = receiveString().section('>', 3, 3);
+    QString lobby = receiveString().section('>', 2, 2);
     cout << "received lobby number " << lobby.toStdString().c_str() << endl;
     //update to lobby comms
     QString SubscribeString2 = standardPrefix + lobby + '>' + "server>" +  userID + '>';
@@ -98,7 +98,7 @@ void Service::Loop()
         QString command = QString(string((char*) datapayload->data(), datapayload->size()).c_str());
         delete datapayload;
         //cout << command.toStdString() << endl;
-        if(processCommand(command.section('>', 5))){
+        if(processCommand(command.section('>', 4))){
             break;
         }
     }

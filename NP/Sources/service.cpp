@@ -13,7 +13,7 @@ Service::Service(QObject *parent, QString userid, int lobbynr):
     player2(""),
     isStarted(false),
     player2Auto(false),
-    standardPrefix("name>servicename>")
+    standardPrefix("Zeeslag>")
 {
     context_p = new zmq::context_t(1);
 
@@ -62,7 +62,7 @@ int Service::getLobby()
 void Service::preparegame(){
     //wait for player 1 ready
     QString receivedmessage = standardReceive();
-    while(receivedmessage.section('>', 5, 5) != QString("response") || receivedmessage.section('>', 6, 6) != QString("ready")){
+    while(receivedmessage.section('>', 4, 4) != QString("response") || receivedmessage.section('>', 5, 5) != QString("ready")){
         receivedmessage = standardReceive();
     }
     //asks if player 2 is CPU or Human
@@ -71,10 +71,10 @@ void Service::preparegame(){
     sendCommand(PLAYER1);
     if(receiveCommand(BOOL).toInt()){
         QString receivedmessage = standardReceive();
-        while(receivedmessage.section('>', 5, 5) != QString("response") || receivedmessage.section('>', 6, 6) != QString("join")){
+        while(receivedmessage.section('>', 4, 4) != QString("response") || receivedmessage.section('>', 5, 5) != QString("join")){
             receivedmessage = standardReceive();
         }
-        player2 = receivedmessage.section('>', 4, 4);
+        player2 = receivedmessage.section('>', 3, 3);
         player2Auto = 0;
         cout << "player 1: " << player1.toStdString() << endl << "player 2: " << player2.toStdString() << endl;
     }
@@ -128,12 +128,12 @@ QString Service::receiveCommand(int type)
     receiver->recv(datapayload);
     QString response = QString(string((char*) datapayload->data(), datapayload->size()).c_str());
     delete datapayload;
-    QString responseValue = response.section('>', 6, 6);
+    QString responseValue = response.section('>', 5, 5);
     if(type == 0)
     {
         if(responseValue == QString("0") || responseValue == QString("1"))
         {
-            return response.section('>', 6, 6);
+            return response.section('>', 5, 5);
         }
         else
         {
@@ -143,7 +143,7 @@ QString Service::receiveCommand(int type)
             //return "error";
         }
     }
-    return response.section('>', 6, 6);
+    return response.section('>', 5, 5);
 }
 
 QString Service::standardReceive(){
