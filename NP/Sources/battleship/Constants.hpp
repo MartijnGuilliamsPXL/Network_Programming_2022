@@ -8,7 +8,7 @@ const int NUM_SHIPS = 5;
 const int BOARD_DIM = 10;
 const int BOARD_SPACES = 100;
 const int SHIP_LENGTHS[NUM_SHIPS] = {5, 4, 3, 3, 2};
-const int TOTAL_SHIP_SPACES = 2; //17
+const int TOTAL_SHIP_SPACES = 17; //17
 const std::string SHIP_NAMES[NUM_SHIPS] = {"Carrier","Battleship","Cruiser","Submarine","Destroyer"};
 
 // board value constants
