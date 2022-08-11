@@ -1,11 +1,3 @@
-/******************************************************************************
-** Author: Christina Brasco
-** Date created: 3/11/2018
-** Last modified date: 3/11/2018
-** Description: header file for the Player class
-******************************************************************************/
-
-
 #include <string>
 
 #ifndef PLAYER_H

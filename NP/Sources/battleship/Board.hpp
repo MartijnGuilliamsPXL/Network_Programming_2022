@@ -1,11 +1,3 @@
-/******************************************************************************
-** Author: Christina Brasco
-** Date created: 3/11/2018
-** Last modified date: 3/11/2018
-** Description: header file for the Board class
-******************************************************************************/
-
-
 #include "Ship.hpp"
 #include "Constants.hpp"
 #include <vector>
@@ -33,7 +25,6 @@ class Board
 		char getSpaceValue(int x, int y);
 		bool recordHit(int x, int y);
 		bool placeShip(int shipNum, int x, int y, bool isHorizontal);
-
 };
 
 #endif

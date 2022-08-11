@@ -1,10 +1,3 @@
-/******************************************************************************
-** Author: Christina Brasco
-** Date created: 3/11/2018
-** Last modified date: 3/11/2018
-** Description: header file for the Ship class
-******************************************************************************/
-
 #include <string>
 
 #ifndef SHIP_H
@@ -19,7 +12,6 @@ class Ship
 		bool isSunk;
 		bool isHorizontal;
 		std::string name;
-
 
 	public:	
 		Ship(int size,  std::string n);//default constructor

@@ -11,10 +11,10 @@ int main(int argc, char *argv[])
 
     ///////////////////////////////////////////////////////////////
     /// commands                                                ///
-    /// create lobby: name>servicename>create>userID>           ///
-    /// lobby created: name>servicename>userID>lobby>           ///
+    /// create lobby: Zeeslag>create>userID>           ///
+    /// lobby created: Zeeslag>userID>lobby>           ///
     ///                                                         ///
-    /// general commands: name>servicename>lobby>userID>command ///
+    /// general commands: Zeeslag>lobby>userID>command ///
     ///                                                         ///
     ///////////////////////////////////////////////////////////////
 

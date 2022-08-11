@@ -1,10 +1,3 @@
-/******************************************************************************
-** Author: Christina Brasco
-** Date created: 3/11/2018
-** Last modified date: 3/11/2018
-** Description: definition of member functions for the player class
-******************************************************************************/
-
 #include "Player.hpp"
 
 //default constructor assigns values when no inputs supplied

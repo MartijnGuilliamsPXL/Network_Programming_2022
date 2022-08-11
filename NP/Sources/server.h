@@ -34,7 +34,7 @@ private:
 
     ///////
     /// commands
-    /// naam>servicenaam>create>USRID
+    /// Zeeslag>create>USRID
     ///
 
     void receiveLoop();

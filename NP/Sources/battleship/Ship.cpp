@@ -1,10 +1,3 @@
-/******************************************************************************
-** Author: Christina Brasco
-** Date created: 3/11/2018
-** Last modified date: 3/11/2018
-** Description: definition of Ship functions
-******************************************************************************/
-
 #include "Ship.hpp"
 #include "Constants.hpp"
 #include <iostream>

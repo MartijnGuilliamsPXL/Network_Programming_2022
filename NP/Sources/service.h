@@ -39,9 +39,9 @@ signals:
 private:
     ////////////////
     /// //in
-    /// naam>servicenaam>lobby>user>USRID>command>val>...
+    /// Zeeslag>lobby>user>USRID>command>val>...
     /// //out
-    /// naam>servicenaam>lobby>server>player>command>val...
+    /// Zeeslag>lobby>server>player>command>val...
     ///
     /// player USRID/ 0 => allebei
 
@@ -78,6 +78,7 @@ private:
     Player p2;
     Board p2Board;
     int activeplayer;
+
 public:
 
     bool playGame();
