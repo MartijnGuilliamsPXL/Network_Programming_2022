@@ -1,32 +1,21 @@
 # Network_Programming_2022
 
-- Zeeslag
+## Zeeslag
+
+Dit project bestaat uit een server en client waarop zeeslag kan gespeeld worden. Een gedeelte van de code voor specifiek het zeeslag spel komt van [cb92](https://github.com/cb92/Battleship). Deze spel code is aangepast om gebruikt te kunnen worden voor deze service. 
 
 
-## Stappenplan
-* 1 voor 1 zenden en ontvangen (1 persoon)
-* 2 personen verbinden
-* om de beurt zenden en ontvangen voor beide spelers
-* server start een spel
+### Compilen
+
+Het project moet met cmake gecompiled worden. De zmq library en de Qt6::core library worden ook gebruikt. 
+
+### Uitvoeren
 
 
-
-## Een spel is
-
-## Deel 1
-
-* elke speler heeft een speelveld (2d array)
-* een speelveld is vast maar wel verschillend
-* een speler kan een coördinaat kiezen om op te schieten (enkel raak/mis feedback)
-
-## Deel 2
-
-* Veld wordt getoond
-* spelers kiezen eigen plaats van boten
+### Spelen
 
 
-
-
-## Bronnen
-
+### Bronnen
 * https://zguide.zeromq.org/
+* https://stackoverflow.com/
+* https://github.com/cb92/Battleship
