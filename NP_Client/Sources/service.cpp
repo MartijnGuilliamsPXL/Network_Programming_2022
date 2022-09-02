@@ -50,12 +50,38 @@ void Service::run()
             joinLobby();
             break;
         }
+        else if(Qchoice == QString("list")){
+            list();
+            break;
+        }
         cout << "error, try again" << endl;
     }
 
     //no need for concurrency
     //QtConcurrent::run(&Service::Loop, this);
     Loop();
+}
+void Service::list(){
+    QString infoRequest = "Zeeslag>list>" + userID + '>';
+    sender->send(infoRequest.toStdString().c_str(), infoRequest.size());
+
+    QString SubscribeString5 = standardPrefix + "userID>list>gameID>";
+    cout << "lobby: " << SubscribeString5.toStdString() << endl;
+    receiver->setsockopt(ZMQ_SUBSCRIBE, SubscribeString5.toStdString().c_str(), SubscribeString5.size());
+
+
+
+    zmq::message_t* datapayload;
+    while(1){
+        datapayload = new zmq::message_t;
+        receiver->recv(datapayload);
+        QString command = QString(string((char*) datapayload->data(), datapayload->size()).c_str());
+        delete datapayload;
+        cout << command.toStdString() << endl;
+
+    }
+    emit killme(this);
+
 }
 
 void Service::setupLobby(){

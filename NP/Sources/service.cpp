@@ -433,7 +433,16 @@ std::string Service::getSquare()
             isGoodInput=true;
         else
         {
-            queueCommand(PRINT, QString("Bad input! Please enter location [Letter][Number] of your desired move, with capital letters only:\n"));
+            if(retString == "Info")
+            {
+                queueCommand(PRINT, QString("Winkans: p1Board = " + QString::number(p1Board.getNumHits()) + "/17 hits"));
+                queueCommand(PRINT, QString("Winkans: p2Board = " + QString::number(p2Board.getNumHits()) + "/17 hits \n"));
+                queueCommand(PRINT, QString("Please enter location [Letter][Number] of desired move:\n"));
+            }
+            else
+            {
+                queueCommand(PRINT, QString("Bad input! Please enter location [Letter][Number] of your desired move, with capital letters only:\n"));
+            }
             queueCommand(REQUEST, QString("string"));
             sendCommand(activeplayer);
             retString = receiveCommand(STRING).toStdString();

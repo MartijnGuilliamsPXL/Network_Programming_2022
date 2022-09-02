@@ -47,6 +47,7 @@ private:
 
     QString standardPrefix;
 
+    void list();
     void setupLobby();
     void joinLobby();
 
